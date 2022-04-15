@@ -10,7 +10,7 @@ from keras import utils as np_utils
 (X_train, y_train), (X_valid, y_valid) = mnist.load_data()
 
 class Net_Keras:
-    def __init__(self):
+    def __init__(self, epochs):
         self.X_train = X_train.reshape(60000, 784).astype('float32')
         self.X_valid = X_valid.reshape(10000, 784).astype('float32')
 
@@ -22,6 +22,7 @@ class Net_Keras:
         self.y_valid = keras.utils.np_utils.to_categorical(y_valid, self.n_classes)
 
         self.model = Sequential()
+        self.epochs = epochs
     
     def modelNet(self):
         self.model.add(Dense(64, activation='relu', input_shape=(784,)))
@@ -40,7 +41,10 @@ class Net_Keras:
 
     def trainAndVal(self):
         self.model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-        self.model.fit(self.X_train, self.y_train, batch_size=128, epochs=5, verbose=1, validation_data=(self.X_valid, self.y_valid))
+        self.history = self.model.fit(self.X_train, self.y_train, batch_size=128, epochs=self.epochs, verbose=1, validation_data=(self.X_valid, self.y_valid))
 
-    def getModel(self):
-        return self.model
+    def getAccuracyLoss_Train(self):
+        return self.history.history['accuracy'], self.history.history['loss']
+
+    def getAccuracyLoss_Val(self):
+        return self.history.history['val_accuracy'], self.history.history['val_loss']

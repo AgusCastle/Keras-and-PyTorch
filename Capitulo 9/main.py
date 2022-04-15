@@ -1,49 +1,64 @@
 import matplotlib.pyplot as plt
 from deep_net_keras import Net_Keras
+from deep_net_torch import Net_Torch
 
-#       (** Eje X **) (** Eje Y **) Esta solo es una prueba 
-# -- Debemos pasar todos los resultados 
-# a listas o tuplas para poder generar la grafica
+epocas = 15
+input_size = 28 * 28
+output_size = 10
+batch_size = 128
+lr = 0.001
 
-# Este es un ejemplo nadamas
-fig, ax = plt.subplots()
-dias = ['L', 'M', 'X', 'J', 'V', 'S', 'D'] # Estas serian nuestras epocas
-temperaturas = {'Madrid':[28.5, 30.5, 31, 30, 28, 27.5, 30.5], # valores de accuracy
-                'Barcelona':[24.5, 25.5, 26.5, 25, 26.5, 24.5, 25]} # Valores loss
-#
-ax.plot(dias, temperaturas['Madrid'], linestyle = 'dashed')
-ax.plot(dias, temperaturas['Barcelona'], linestyle = 'dotted')
-plt.show()
+epochs = range(1, epocas + 1, 1)
 
-# Este ejemplo ya tenemos todo
-
-net_keras = Net_Keras()
+# Keras
+net_keras = Net_Keras(epocas)
 
 net_keras.modelNet()
 net_keras.trainAndVal()
 
-net_keras.getModel() # Supongo que al obtener podemos obtener los datos para generar las graficas
+# PyTorch
 
+net_torch = Net_Torch(input_size, output_size, batch_size, lr, epocas)
 
-'''
-Aqui en el main se traeran los datos de keras y pytorch para generar las graficas
-obtendremos de 
+net_torch.train()
+net_torch.eval()
 
-Keras
-    Accuracy Train
-    Accuracy Val
-PyTorch
-    Accuracy Train
-    Accuracy Val
+# Keras vectores
 
-Con en el eje de las x con la epoca
-Asi mismo tambien evaluaremos la perdida
+acc_t_k, loss_t_k = net_keras.getAccuracyLoss_Train()
+acc_v_k, loos_v_k = net_keras.getAccuracyLoss_Val()
 
-Keras
-    Loss Train
-    Loss Val
-PyTorch
-    Loss Train
-    Loss Val
+# Torch vectores
 
-'''
+acc_t_t, loss_t_t = net_torch.getAccuracyLoss_Train()
+acc_v_t, loss_v_t = net_torch.getAccuracyLoss_Val()
+
+# Pasamos a la graficacion accuracy
+
+plt.plot ( epochs, acc_t_k, 'r--', label='Training acc Keras'  )
+plt.plot ( epochs, acc_v_k,  'b', label='Validation acc Keras')
+
+plt.plot ( epochs, acc_t_t, 'k--', label='Training acc Torch'  )
+plt.plot ( epochs, acc_v_t,  'g', label='Validation acc Torch')
+
+plt.title ('Training and validation accuracy Keras - Torch')
+plt.ylabel('acc')
+plt.xlabel('epochs')
+
+plt.legend()
+plt.figure()
+
+# Pasamos a la graficacion loss
+
+plt.plot ( epochs, loss_t_k, 'r--', label='Training loss Keras'  )
+plt.plot ( epochs, loos_v_k,  'b', label='Validation loss Keras')
+
+plt.plot ( epochs, loss_t_t, 'k--', label='Training loss Torch'  )
+plt.plot ( epochs, loss_v_t,  'g', label='Validation loss Torch')
+
+plt.title ('Training and validation loss Keras - Torch')
+plt.ylabel('acc')
+plt.xlabel('epochs')
+
+plt.legend()
+plt.figure()
