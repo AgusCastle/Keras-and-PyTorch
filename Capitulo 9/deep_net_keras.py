@@ -18,8 +18,8 @@ class Net_Keras:
         self.X_valid /= 255
 
         self.n_classes = 10
-        self.y_train = keras.utils.np_utils.to_categorical(self.y_train, self.n_classes)
-        self.y_valid = keras.utils.np_utils.to_categorical(self.y_valid, self.n_classes)
+        self.y_train = keras.utils.np_utils.to_categorical(y_train, self.n_classes)
+        self.y_valid = keras.utils.np_utils.to_categorical(y_valid, self.n_classes)
 
         self.model = Sequential()
     
