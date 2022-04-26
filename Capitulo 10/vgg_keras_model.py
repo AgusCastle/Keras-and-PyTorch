@@ -9,6 +9,8 @@ from tensorflow.keras.layers import BatchNormalization
 from keras.callbacks import TensorBoard
 
 import tflearn.datasets.oxflower17 as oxflower17
+import os; 
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 X , Y = oxflower17.load_data(one_hot=True) 
 
