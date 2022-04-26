@@ -61,7 +61,7 @@ class VGGKeras():
 
         self.model.add(Dense(17, activation='softmax'))
 
-        self.model.sumary()
+        self.model.summary()
 
     def getAccuracyLoss_Train(self):
         return self.history.history['accuracy'], self.history.history['loss']
