@@ -1,5 +1,4 @@
 import numpy as np
-from torch import dropout
 np.random.seed(42)
 
 import keras
