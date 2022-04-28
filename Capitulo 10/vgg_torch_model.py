@@ -98,7 +98,7 @@ class VggNetTorch():
 
     def train(self):
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') #training with either cpu or cuda
-        self.model = self.model.to()
+        self.model = self.model.to('cuda')
         for epoch in range(50): #I decided to train the model for 50 epochs
             loss_ep = 0
             
