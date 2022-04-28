@@ -127,7 +127,3 @@ class VggNetTorch():
                 print(
                     f"Got {num_correct} / {num_samples} with accuracy {float(num_correct) / float(num_samples) * 100:.2f}"
                 )
-
-
-vgg = VggNetTorch(0.001, 250)
-vgg.train()
