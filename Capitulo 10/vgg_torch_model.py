@@ -8,8 +8,7 @@ import torch.nn.functional as F
 #from torchvision.datasets import Flowers102
 from torchvision.transforms import ToTensor
 from torchvision.utils import make_grid
-from torch.utils.data.dataloader import DataLoader
-from torch.utils.data import random_split, TensorDataset, Dataset
+from torch.utils.data import random_split, TensorDataset, Dataset, DataLoader
 from torchvision import transforms
 from torchvision.utils import save_image
 import torch.optim as optim
@@ -31,6 +30,8 @@ class DatasetFlower(Dataset):
         return self.X[ix], self.Y[ix]
 
 dataset = DatasetFlower(X, Y)
+
+dataloader = DataLoader(dataset, batch_size=64,shuffle=True)
 print("Tamaño del dataset: {}".format(len(dataset)))
 
 class VGGTorch(nn.Module):
@@ -101,7 +102,7 @@ class VggNetTorch():
         for epoch in range(50): #I decided to train the model for 50 epochs
             loss_ep = 0
             
-            for batch_idx, (data, targets) in enumerate(train_iter):
+            for batch_idx, (data, targets) in enumerate(dataloader):
                 data = data.to(device=device)
                 targets = targets.to(device=device)
                 ## Forward Pass
@@ -111,12 +112,12 @@ class VggNetTorch():
                 loss.backward()
                 self.optimizer.step()
                 loss_ep += loss.item()
-            print(f"Loss in epoch {epoch} :::: {loss_ep/len(train_iter)}")
+            print(f"Loss in epoch {epoch} :::: {loss_ep/len(dataloader)}")
 
             with torch.no_grad():
                 num_correct = 0
                 num_samples = 0
-                for batch_idx, (data,targets) in enumerate(test_iter):
+                for batch_idx, (data,targets) in enumerate(dataloader):
                     data = data.to(device=device)
                     targets = targets.to(device=device)
                     ## Forward Pass
@@ -127,3 +128,6 @@ class VggNetTorch():
                 print(
                     f"Got {num_correct} / {num_samples} with accuracy {float(num_correct) / float(num_samples) * 100:.2f}"
                 )
+
+vgg = VggNetTorch(0.001,50)
+vgg.train()
