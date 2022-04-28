@@ -20,7 +20,7 @@ X , Y = oxflower17.load_data(one_hot=True)
 
 class DatasetFlower(Dataset):
     def __init__(self, X, Y):
-        self.X = torch.from_numpy(X).float().cuda()
+        self.X = torch.from_numpy(X).float()
         self.Y = torch.from_numpy(Y)
 
     def __len__(self):
