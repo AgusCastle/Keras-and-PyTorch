@@ -9,7 +9,7 @@ import torch.nn.functional as F
 from torchvision.transforms import ToTensor
 from torchvision.utils import make_grid
 from torch.utils.data.dataloader import DataLoader
-from torch.utils.data import random_split, TensorDataset
+from torch.utils.data import random_split, TensorDataset, Dataset
 from torchvision import transforms
 from torchvision.utils import save_image
 import torch.optim as optim
@@ -19,40 +19,19 @@ from sklearn.model_selection import train_test_split
 
 X , Y = oxflower17.load_data(one_hot=True) 
 
-x_tensor = torch.from_numpy(X)
-y_tensor = torch.from_numpy(Y)
+class DatasetFlower(Dataset):
+    def __init__(self, X, Y):
+        self.X = torch.from_numpy(X).float().cuda()
+        self.Y = torch.from_numpy(Y)
 
-val_size = 17 * 80 * 0.1
-train_size = 17 *80 - val_size
+    def __len__(self):
+        return len(self.X)
 
-dataset = TensorDataset(x_tensor, y_tensor)
-val_size = int(len(dataset)*0.1)
-train_size = len(dataset)- int(len(dataset)*0.1)
+    def __getitem__(self, ix):
+        return self.X[ix], self.Y[ix]
 
-train_ds, val_ds = random_split(x_tensor, [train_size, val_size])
-
-
-train_iter = torch.utils.data.DataLoader(train_ds, batch_size=64, shuffle=True)
-test_iter = torch.utils.data.DataLoader(val_ds, batch_size=64, shuffle=True)
-
-for batch_idx, samples in enumerate(test_iter):
-      print(batch_idx, type(samples))
-
-
-
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
-
-X_train = torch.tensor(X_train, dtype=torch.float)
-X_test = torch.tensor(X_test, dtype=torch.float)
-
-Y_train = torch.tensor(Y_train, dtype=torch.float).view(-1, 1)
-Y_test = torch.tensor(Y_test, dtype=torch.float).view(-1, 1)
-
-datasets = torch.utils.data.TensorDataset(X_train,Y_train)
-tests = torch.utils.data.TensorDataset(X_test, Y_test)
-
-train_iter = torch.utils.data.DataLoader(datasets, batch_size=64, shuffle=True)
-test_iter = torch.utils.data.DataLoader(tests, batch_size=64, shuffle=True)
+dataset = DatasetFlower(X, Y)
+print("Tamaño del dataset: {}".format(len(dataset)))
 
 class VGGTorch(nn.Module):
     def __init__(self) -> None:
