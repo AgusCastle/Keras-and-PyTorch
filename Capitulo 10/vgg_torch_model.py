@@ -57,7 +57,7 @@ class VGGTorch(nn.Module):
         self.conv5_2 = nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding=1)
         self.conv5_3 = nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding=1)
 
-        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2)
+        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=1)
 
         self.fc1 = nn.Linear(25088, 4096)
         self.fc2 = nn.Linear(4096, 4096)
