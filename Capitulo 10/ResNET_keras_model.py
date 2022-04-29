@@ -19,13 +19,9 @@ model.add(resnet50)
 # Add the custom layers atop the ResNET50 model: 
 model.add(Flatten(name='flattened'))
 model.add(Dropout(0.5, name='dropout'))
-model.add(Dense(2, activation='softmax', name='predictions'))
+model.add(Dense(6, activation='softmax', name='predictions'))
 
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-
-## Instead, uncomment the two lines below to download the data: 
-# ! wget -c https://www.dropbox.com/s/86r9z1kb42422up/hot-dog-not-hot-dog.tar.gz
-# ! tar -xzf hot-dog-not-hot-dog.tar.gz
 
 # Instantiate two image generator classes:
 train_datagen = ImageDataGenerator(
@@ -42,16 +38,13 @@ valid_datagen = ImageDataGenerator(
     horizontal_flip=True,
     fill_mode='reflect')
 
-# Define the batch size:
-batch_size=32
-
 # Define the train and validation generators: 
 train_generator = train_datagen.flow_from_directory(
     directory='./cartoon_face/train',
     target_size=(224, 224),
     classes=['personai_01656','personai_01675','personai_01954','personai_02110','personai_03844','personai_04878'],
     class_mode='categorical',
-    batch_size=batch_size,
+    batch_size=32,
     shuffle=True,
     seed=42)
 
@@ -60,14 +53,14 @@ valid_generator = valid_datagen.flow_from_directory(
     target_size=(224, 224),
     classes=['personai_01656','personai_01675','personai_01954','personai_02110','personai_03844','personai_04878'],
     class_mode='categorical',
-    batch_size=batch_size,
+    batch_size=32,
     shuffle=True,
     seed=42)
 
 model.fit(
     train_generator, 
-    #steps_per_epoch=16, 
-    epochs=16, 
+    steps_per_epoch=16, 
+    epochs=30, 
     validation_data=valid_generator, 
-    #validation_steps=16
+    validation_steps=16
     )
