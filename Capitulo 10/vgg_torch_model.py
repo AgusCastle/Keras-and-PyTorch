@@ -40,7 +40,7 @@ print("Tamaño del dataset: {}".format(len(dataset)))
 class VGGTorch(nn.Module):
     def __init__(self) -> None:
         super(VGGTorch, self).__init__()
-        self.conv1_1 = nn.Conv2d(in_channels=224 * 224 * 3, out_channels=64, kernel_size=3, padding=1)
+        self.conv1_1 = nn.Conv2d(in_channels=3, out_channels=64, kernel_size=3, padding=1)
         self.conv1_2 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, padding=1)
 
         self.conv2_1 = nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, padding=1)
