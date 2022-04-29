@@ -15,6 +15,8 @@ import torch.optim as optim
 import tflearn.datasets.oxflower17 as oxflower17
 from sklearn.model_selection import train_test_split
 
+# Device configuration
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 X , Y = oxflower17.load_data(one_hot=True) 
 
@@ -97,37 +99,39 @@ class VggNetTorch():
         self.epochs = epochs
 
     def train(self):
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') #training with either cpu or cuda
-        self.model = self.model.to('cuda')
-        for epoch in range(50): #I decided to train the model for 50 epochs
-            loss_ep = 0
-            
-            for batch_idx, (data, targets) in enumerate(dataloader):
-                data = data.to(device=device)
-                targets = targets.to(device=device)
-                ## Forward Pass
+        total_step = len(dataloader)
+        for epoch in range(self.epochs):
+            for i, (images, labels) in enumerate(dataloader):
+                images = images.to(device)
+                labels = labels.to(device)
+                
+                # Forward pass
+                outputs = self.model(images)
+                loss = self.criterion(outputs, labels)
+                
+                # Backward and optimize
                 self.optimizer.zero_grad()
-                scores = self.model(data)
-                loss = self.criterion(scores,targets)
                 loss.backward()
                 self.optimizer.step()
-                loss_ep += loss.item()
-            print(f"Loss in epoch {epoch} :::: {loss_ep/len(dataloader)}")
+                
+                if (i+1) % 100 == 0:
+                    print ('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}' 
+                        .format(epoch+1, self.epochs, i+1, total_step, loss.item()))
 
-            with torch.no_grad():
-                num_correct = 0
-                num_samples = 0
-                for batch_idx, (data,targets) in enumerate(dataloader):
-                    data = data.to(device=device)
-                    targets = targets.to(device=device)
-                    ## Forward Pass
-                    scores = self.model(data)
-                    _, predictions = scores.max(1)
-                    num_correct += (predictions == targets).sum()
-                    num_samples += predictions.size(0)
-                print(
-                    f"Got {num_correct} / {num_samples} with accuracy {float(num_correct) / float(num_samples) * 100:.2f}"
-                )
+        # Test the model
+        self.model.eval()  # eval mode (batchnorm uses moving mean/variance instead of mini-batch mean/variance)
+        with torch.no_grad():
+            correct = 0
+            total = 0
+            for images, labels in dataloader:
+                images = images.to(device)
+                labels = labels.to(device)
+                outputs = self.model(images)
+                _, predicted = torch.max(outputs.data, 1)
+                total += labels.size(0)
+                correct += (predicted == labels).sum().item()
+
+            print('Test Accuracy of the model on the 10000 test images: {} %'.format(100 * correct / total))
 
 vgg = VggNetTorch(0.001,50)
 vgg.train()
