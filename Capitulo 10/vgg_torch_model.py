@@ -100,14 +100,14 @@ class VggNetTorch():
                     nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, padding=1),
                     nn.ReLU(),
                     nn.MaxPool2d(kernel_size=2, stride=2, padding=1),
-                    nn.BatchNorm1d(64), # Primer bloque
+                    nn.BatchNorm2d(64), # Primer bloque
 
                     nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, padding=1),
                     nn.ReLU(),
                     nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, padding=1),
                     nn.ReLU(),
                     nn.MaxPool2d(kernel_size=2, stride=2, padding=1),
-                    nn.BatchNorm1d(128), # Segundo Bloque
+                    nn.BatchNorm2d(128), # Segundo Bloque
 
                     nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3, padding=1),
                     nn.ReLU(),
@@ -116,7 +116,7 @@ class VggNetTorch():
                     nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, padding=1),
                     nn.ReLU(),
                     nn.MaxPool2d(kernel_size=2, stride=2, padding=1),
-                    nn.BatchNorm1d(256), # Tercer Bloque
+                    nn.BatchNorm2d(256), # Tercer Bloque
 
                     nn.Conv2d(in_channels=256, out_channels=512, kernel_size=3, padding=1),
                     nn.ReLU(),
@@ -125,7 +125,7 @@ class VggNetTorch():
                     nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding=1),
                     nn.ReLU(),
                     nn.MaxPool2d(kernel_size=2, stride=2, padding=1),
-                    nn.BatchNorm1d(512), # Cuarto Bloque
+                    nn.BatchNorm2d(512), # Cuarto Bloque
 
                     nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding=1),
                     nn.ReLU(),
@@ -134,7 +134,7 @@ class VggNetTorch():
                     nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding=1),
                     nn.ReLU(),
                     nn.MaxPool2d(kernel_size=2, stride=2, padding=1),
-                    nn.BatchNorm1d(512), # Cuarto Bloque
+                    nn.BatchNorm2d(512), # Cuarto Bloque
                     nn.Flatten(),
                     nn.Linear(512, 4096),
                     nn.ReLU(),
