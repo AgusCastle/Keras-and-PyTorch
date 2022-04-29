@@ -94,7 +94,57 @@ class VGGTorch(nn.Module):
 
 class VggNetTorch():
     def __init__(self, learning_rate, epochs):
-        self.model = VGGTorch()
+        self.model = nn.Sequential(
+                    nn.Conv2d(in_channels=224, out_channels=64, kernel_size=3, padding=1),
+                    nn.ReLU(),
+                    nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, padding=1),
+                    nn.ReLU(),
+                    nn.MaxPool2d(kernel_size=2, stride=2, padding=1),
+                    nn.BatchNorm1d(64), # Primer bloque
+
+                    nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, padding=1),
+                    nn.ReLU(),
+                    nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, padding=1),
+                    nn.ReLU(),
+                    nn.MaxPool2d(kernel_size=2, stride=2, padding=1),
+                    nn.BatchNorm1d(128), # Segundo Bloque
+
+                    nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3, padding=1),
+                    nn.ReLU(),
+                    nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, padding=1),
+                    nn.ReLU(),
+                    nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, padding=1),
+                    nn.ReLU(),
+                    nn.MaxPool2d(kernel_size=2, stride=2, padding=1),
+                    nn.BatchNorm1d(256), # Tercer Bloque
+
+                    nn.Conv2d(in_channels=256, out_channels=512, kernel_size=3, padding=1),
+                    nn.ReLU(),
+                    nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding=1),
+                    nn.ReLU(),
+                    nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding=1),
+                    nn.ReLU(),
+                    nn.MaxPool2d(kernel_size=2, stride=2, padding=1),
+                    nn.BatchNorm1d(512), # Cuarto Bloque
+
+                    nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding=1),
+                    nn.ReLU(),
+                    nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding=1),
+                    nn.ReLU(),
+                    nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding=1),
+                    nn.ReLU(),
+                    nn.MaxPool2d(kernel_size=2, stride=2, padding=1),
+                    nn.BatchNorm1d(512), # Cuarto Bloque
+                    nn.Flatten(),
+                    nn.Linear(512, 4096),
+                    nn.ReLU(),
+                    nn.Dropout(0.5),
+                    nn.Linear(4096, 4096),
+                    nn.ReLU(),
+                    nn.Dropout(0.5),
+                    nn.Linear(4096, 17),
+                    nn.Softmax(dim=1)
+        )
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = optim.Adam(self.model.parameters(), lr=learning_rate)
         self.epochs = epochs
