@@ -95,7 +95,7 @@ class VGGTorch(nn.Module):
 class VggNetTorch():
     def __init__(self, learning_rate, epochs):
         self.model = nn.Sequential(
-                    nn.Conv2d(in_channels=224, out_channels=64, kernel_size=3, padding=1),
+                    nn.Conv2d(in_channels=3, out_channels=64, kernel_size=3, padding=1),
                     nn.ReLU(),
                     nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, padding=1),
                     nn.ReLU(),
