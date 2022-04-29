@@ -99,6 +99,7 @@ class VggNetTorch():
         self.epochs = epochs
 
     def train(self):
+        self.model = self.model.cuda(device=device)
         total_step = len(dataloader)
         for epoch in range(self.epochs):
             for i, (images, labels) in enumerate(dataloader):
