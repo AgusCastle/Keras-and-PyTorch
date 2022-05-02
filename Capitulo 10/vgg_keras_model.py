@@ -1,17 +1,50 @@
 import numpy as np
 np.random.seed(42)
-
 import keras
 from keras.models import Sequential
 from keras.layers import Dense, Flatten, Conv2D, MaxPooling2D, Dropout
 from tensorflow.keras.layers import BatchNormalization
 from keras.callbacks import TensorBoard
-
-import tflearn.datasets.oxflower17 as oxflower17
+from keras.preprocessing.image import ImageDataGenerator
 import os; 
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+os.environ['CUDA_VISIBLE_DEVICES'] = 'cuda:0'
 
-X , Y = oxflower17.load_data(one_hot=True) 
+
+# Instantiate two image generator classes:
+train_datagen = ImageDataGenerator(
+    rescale=1.0/255,
+    data_format='channels_last',
+    rotation_range=30,
+    horizontal_flip=True,
+    fill_mode='reflect')
+
+valid_datagen = ImageDataGenerator(
+    rescale=1.0/255,
+    data_format='channels_last',
+    rotation_range=30,
+    horizontal_flip=True,
+    fill_mode='reflect')
+
+# Define the train and validation generators: 
+train_generator = train_datagen.flow_from_directory(
+    directory='/home/bringascastle/Escritorio/datasets/cartoon_face/train',
+    target_size=(224, 224),
+    classes=['personai_01656','personai_01675','personai_01954','personai_02110','personai_03844','personai_04878'],
+    class_mode='categorical',
+    batch_size=32,
+    shuffle=True,
+    seed=42)
+
+valid_generator = valid_datagen.flow_from_directory(
+    directory='/home/bringascastle/Escritorio/datasets/cartoon_face/test',
+    target_size=(224, 224),
+    classes=['personai_01656','personai_01675','personai_01954','personai_02110','personai_03844','personai_04878'],
+    class_mode='categorical',
+    batch_size=32,
+    shuffle=True,
+    seed=42)
+
+
 
 class VGGKeras():
     def __init__(self, epochs, batch_size):
@@ -23,7 +56,13 @@ class VGGKeras():
 
     def trainAndVal(self):
         self.model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-        self.history = self.model.fit(X, Y, batch_size=self.batch_size, epochs=self.epochs, verbose=1, validation_split=0.1, shuffle=True)
+        self.history = self.model.fit(
+    train_generator, 
+    steps_per_epoch=16, 
+    epochs=30, 
+    validation_data=valid_generator, 
+    validation_steps=16
+    )
 
     def neuronalNetworkModel(self):
         self.model.add(Conv2D(64, 3, activation='relu', input_shape=(224, 224, 3)))
@@ -60,7 +99,7 @@ class VGGKeras():
         self.model.add(Dense(4096, activation='relu'))
         self.model.add(Dropout(0.5))
 
-        self.model.add(Dense(17, activation='softmax'))
+        self.model.add(Dense(6, activation='softmax'))
 
         self.model.summary()
 

@@ -1,1 +1,4 @@
 .DS_store
+.vscode/
+17flowers/
+__pycache__/
