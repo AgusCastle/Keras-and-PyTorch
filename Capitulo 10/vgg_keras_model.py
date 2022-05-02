@@ -59,7 +59,7 @@ class VGGKeras():
         self.history = self.model.fit(
     train_generator, 
     steps_per_epoch=16, 
-    epochs=30, 
+    epochs=self.epochs, 
     validation_data=valid_generator, 
     validation_steps=16
     )

@@ -31,7 +31,7 @@ train_dataloader = DataLoader(train_dataset, batch_size= 64, shuffle=True)
 test_dataloader = DataLoader(test_dataset, batch_size= 64, shuffle=False)
 
 # Device configuration
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+#device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 class VGGTorch(nn.Module):
     def __init__(self) -> None:
@@ -89,7 +89,7 @@ class VGGTorch(nn.Module):
         return x
 
 class VggNetTorch():
-    def __init__(self, learning_rate, epochs):
+    def __init__(self, learning_rate, epochs, device):
         self.model = nn.Sequential(
                     nn.Conv2d(in_channels=3, out_channels=64, kernel_size=3, padding=1),
                     nn.ReLU(),
@@ -145,41 +145,69 @@ class VggNetTorch():
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = optim.Adam(self.model.parameters(), lr=learning_rate)
         self.epochs = epochs
+        self.device = device
+
+    def getAccuracyLossTrain(self):
+        return self.trainAccuracy, self.trainLoss
+    
+    def getAccuracyLossVal(self):
+        return self.valAccuracy, self.valLoss
 
     def train(self):
-        self.model = self.model.cuda(device=device)
-        print(device)
+        self.model = self.model.cuda(device=self.device)
+        print(self.device)
+
+        self.trainAccuracy = []
+        self.trainLoss = []
+
+        self.valAccuracy = []
+        self.valLoss = []
        
-        for epoch in range(50): #I decided to train the model for 50 epochs
+        for epoch in range(self.epochs): #I decided to train the model for 50 epochs
             loss_ep = 0
             
+            num_correct = 0
+            num_samples = 0
             for batch_idx, (data, targets) in enumerate(train_dataloader):
-                data = data.to(device=device)
-                targets = targets.to(device=device)
+                data = data.to(device=self.device)
+                targets = targets.to(device=self.device)
                 ## Forward Pass
                 self.optimizer.zero_grad()
+                
                 scores = self.model(data)
+                _, predictions = scores.max(1)
+
+                num_correct += (predictions == targets).sum()
+                num_samples += predictions.size(0)
+                
                 loss = self.criterion(scores,targets)
                 loss.backward()
+                
                 self.optimizer.step()
                 loss_ep += loss.item()
+            
             print(f"Loss in epoch {epoch} :::: {loss_ep/len(train_dataloader)}")
+            self.trainAccuracy.append(float(num_correct) / float(num_samples))
+            self.trainLoss.append(loss_ep/len(train_dataloader))
 
             with torch.no_grad():
+                loss_ep = 0
                 num_correct = 0
                 num_samples = 0
                 for batch_idx, (data,targets) in enumerate(test_dataloader):
-                    data = data.to(device=device)
-                    targets = targets.to(device=device)
+                    data = data.to(device=self.device)
+                    targets = targets.to(device=self.device)
                     ## Forward Pass
                     scores = self.model(data)
                     _, predictions = scores.max(1)
                     num_correct += (predictions == targets).sum()
                     num_samples += predictions.size(0)
+
+                    loss = self.criterion(scores,targets)
+                    loss_ep += loss.item()
+
                 print(
                     f"Got {num_correct} / {num_samples} with accuracy {float(num_correct) / float(num_samples) * 100:.2f}"
                 )
-
-
-vgg = VggNetTorch(0.001,50)
-vgg.train()
+                self.valAccuracy.append(float(num_correct) / float(num_samples))
+                self.valLoss.append(loss_ep/len(test_dataloader))
