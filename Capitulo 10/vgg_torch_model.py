@@ -17,8 +17,8 @@ train_path = "/home/bringascastle/Escritorio/datasets/cartoon_face/train"
 test_path = "/home/bringascastle/Escritorio/datasets/cartoon_face/test"
 
 
-tranform_train = transforms.Compose([transforms.Resize((224,224)), transforms.RandomHorizontalFlip(p=0.7), transforms.ToTensor(), transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
-tranform_test = transforms.Compose([transforms.Resize((224,224)), transforms.ToTensor(), transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
+tranform_train = transforms.Compose([transforms.Resize((224,224)), transforms.RandomHorizontalFlip(p=0.1), transforms.ToTensor(), transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
+tranform_test = transforms.Compose([transforms.Resize((224,224)), transforms.RandomHorizontalFlip(p=0.1),transforms.ToTensor(), transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
 
 #preparing the train, validation and test dataset
 
@@ -27,8 +27,8 @@ test_dataset = torchvision.datasets.ImageFolder(root=test_path, transform= tranf
 
 print(len(train_dataset))
 
-train_dataloader = DataLoader(train_dataset, batch_size= 64, shuffle=True)
-test_dataloader = DataLoader(test_dataset, batch_size= 64, shuffle=False)
+train_dataloader = DataLoader(train_dataset, batch_size= 16, shuffle=True)
+test_dataloader = DataLoader(test_dataset, batch_size= 16, shuffle=False)
 
 # Device configuration
 #device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -81,8 +81,11 @@ class VGGTorch(nn.Module):
         x = F.relu(self.conv5_3(x))
         x = self.maxpool(x)
         x = x.reshape(x.shape[0], -1) # Este actua como el Flatten
+        #x = torch.flatten(x)
         x = F.relu(self.fc1(x))
         x = F.dropout(x, 0.5) #dropout was included to combat overfitting
+        #x = F.relu(self.fc2(x))
+        #x = F.dropout(x, 0.5)
         x = F.relu(self.fc2(x))
         x = F.dropout(x, 0.5)
         x = self.fc3(x)
