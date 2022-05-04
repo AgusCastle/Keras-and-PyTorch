@@ -75,6 +75,12 @@ model.fc = nn.Sequential(
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.fc.parameters())
 
+train_accuracy = []
+train_loss = []
+
+val_accuracy = []
+val_loss = []
+
 def train_model(model, criterion, optimizer, num_epochs=3):
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch+1, num_epochs))
@@ -104,11 +110,25 @@ def train_model(model, criterion, optimizer, num_epochs=3):
                 _, preds = torch.max(outputs, 1)
                 running_loss += loss.item() * inputs.size(0)
                 running_corrects += torch.sum(preds == labels.data)
-
+            
             epoch_loss = running_loss / len(image_datasets[phase])
             epoch_acc = running_corrects.double() / len(image_datasets[phase])
 
             print('{} loss: {:.4f}, acc: {:.4f}'.format(phase, epoch_loss, epoch_acc))
+
+            if phase == 'train':
+                train_accuracy.append(epoch_acc)
+                train_loss.append(loss)
+            else:
+                val_accuracy.append(epoch_acc)
+                val_loss.append(epoch_loss)
+
     return model
 
 model_trained = train_model(model, criterion, optimizer, num_epochs=30)
+
+def getAccuracyLossTrain():
+    return train_accuracy, train_loss
+
+def getAccuracyLossVal():
+    return val_accuracy, val_loss

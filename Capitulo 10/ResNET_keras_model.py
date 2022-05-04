@@ -40,7 +40,7 @@ valid_datagen = ImageDataGenerator(
 
 # Define the train and validation generators: 
 train_generator = train_datagen.flow_from_directory(
-    directory='./cartoon_face/train',
+    directory='/home/bringascastle/Escritorio/datasets/cartoon_face/train/',
     target_size=(224, 224),
     classes=['personai_01656','personai_01675','personai_01954','personai_02110','personai_03844','personai_04878'],
     class_mode='categorical',
@@ -49,18 +49,23 @@ train_generator = train_datagen.flow_from_directory(
     seed=42)
 
 valid_generator = valid_datagen.flow_from_directory(
-    directory='./cartoon_face/test',
+    directory='/home/bringascastle/Escritorio/datasets/cartoon_face/test/',
     target_size=(224, 224),
     classes=['personai_01656','personai_01675','personai_01954','personai_02110','personai_03844','personai_04878'],
     class_mode='categorical',
     batch_size=32,
     shuffle=True,
     seed=42)
-
-model.fit(
+history = model.fit(
     train_generator, 
     steps_per_epoch=16, 
     epochs=30, 
     validation_data=valid_generator, 
     validation_steps=16
     )
+
+def getAccuracyLoss_Train():
+        return history.history['accuracy'], history.history['loss']
+
+def getAccuracyLoss_Val():
+        return history.history['val_accuracy'], history.history['val_loss']
